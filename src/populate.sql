@@ -224,3 +224,85 @@ INSERT INTO HOST_BID_REPRESENTATIVE (Champ_ID, Bid_No, Person_ID) VALUES
 (3, 1, 9),
 (4, 1, 12),
 (4, 2, 18);
+
+--tickets and competitor editions
+
+INSERT INTO TICKET (Champ_ID, Ticket_No, Type, Access, Price, Currency, Status, Valid_On, Holder_ID) VALUES
+(1, 101, 'Competitor', 'Weekend', 65.00, 'USD', 'Used', NULL, 4),
+(1, 102, 'Competitor', 'Weekend', 65.00, 'USD', 'Used', NULL, 5),
+(1, 103, 'Competitor', 'Weekend', 65.00, 'USD', 'Used', NULL, 6),
+(1, 104, 'Competitor', 'Weekend', 65.00, 'USD', 'Used', NULL, 7),
+(1, 105, 'Competitor', 'Weekend', 65.00, 'USD', 'Used', NULL, 8),
+(1, 201, 'Spectator', 'Day', 25.00, 'USD', 'Used', '2017-09-02', 17),
+(2, 201, 'Competitor', 'Weekend', 60.00, 'EUR', 'Used', NULL, 4),
+(2, 202, 'Competitor', 'Weekend', 60.00, 'EUR', 'Used', NULL, 6),
+(3, 301, 'Competitor', 'Weekend', 60.00, 'EUR', 'Used', NULL, 9),
+(4, 401, 'Competitor', 'Weekend', 75.00, 'USD', 'Valid', NULL, 16),
+-- Demo Ticket specifically designated for DELETE / Cancel test in Web UI:
+(4, 999, 'Spectator', 'Day', 30.00, 'USD', 'Valid', '2025-07-05', 17);
+
+INSERT INTO COMPETITOR_AT_EDITION (Person_ID, Champ_ID, Represented_Country, Event_Hometown_City, Event_Hometown_Region, Event_Hometown_Country) VALUES
+(4, 1, 'USA', 'Philadelphia', 'Pennsylvania', 'USA'),
+(5, 1, 'USA', 'Minneapolis', 'Minnesota', 'USA'),
+(6, 1, 'USA', 'Willits', 'California', 'USA'),
+(7, 1, 'USA', 'Louisville', 'Kentucky', 'USA'),
+(8, 1, 'USA', 'Oneonta', 'New York', 'USA'),
+(4, 2, 'USA', 'Philadelphia', 'Pennsylvania', 'USA'),
+(6, 2, 'USA', 'Willits', 'California', 'USA'),
+(8, 2, 'USA', 'Oneonta', 'New York', 'USA'),
+(9, 3, 'Germany', 'Höfen', 'Bavaria', 'Germany'),
+(6, 3, 'USA', 'Willits', 'California', 'USA'),
+(16, 4, 'USA', 'Columbus', 'Ohio', 'USA');
+
+--event participation and results
+
+INSERT INTO COMPETES_IN (Person_ID, Category_ID, Champ_ID, Competitor_No, Score, Placement, Beard_Length_cm, Checked_In, Check_In_At, Entry_Status) VALUES
+-- Austin 2017:
+(4, 14, 1, 101, 48.50, 2, 38.00, TRUE, '2017-09-01 09:30:00', 'Result_recorded'),
+(6, 16, 1, 102, 49.50, 1, 42.00, TRUE, '2017-09-01 09:45:00', 'Result_recorded'),
+(5, 6, 1, 103, 49.00, 1, 12.00, TRUE, '2017-09-01 10:00:00', 'Result_recorded'),
+(7, 2, 1, 104, 48.00, 1, 15.00, TRUE, '2017-09-01 10:15:00', 'Result_recorded'),
+(8, 15, 1, 105, 50.00, 1, 35.00, TRUE, '2017-09-01 10:30:00', 'Result_recorded'),
+-- Antwerp 2019:
+(4, 14, 2, 201, 49.00, 1, 40.00, TRUE, '2019-05-17 09:00:00', 'Result_recorded'),
+(6, 16, 2, 202, 48.00, 2, 44.00, TRUE, '2019-05-17 09:15:00', 'Result_recorded'),
+(8, 14, 2, 203, 47.50, 3, 36.00, TRUE, '2019-05-17 09:30:00', 'Result_recorded'),
+-- Burghausen 2023:
+(9, 14, 3, 301, 48.50, 1, 35.00, TRUE, '2023-06-09 10:00:00', 'Result_recorded'),
+(6, 16, 3, 302, 49.00, 1, 46.00, TRUE, '2023-06-09 10:15:00', 'Result_recorded'),
+-- Pittsburgh 2025 (Demo Competitor: Registered, ready for UPDATE Check-in test in UI demo):
+(16, 14, 4, 401, NULL, NULL, 30.00, FALSE, NULL, 'Registered');
+
+INSERT INTO MEMBER_OF (Person_ID, Club_ID) VALUES
+(4, 6),
+(5, 6),
+(6, 6),
+(7, 6),
+(8, 6),
+(9, 7),
+(16, 4);
+
+INSERT INTO BEST_IN_SHOW (Champ_ID, Person_ID, Division) VALUES
+(1, 8, 'Full Beard'),
+(2, 4, 'Full Beard'),
+(3, 6, 'Full Beard');
+
+INSERT INTO ENTRY_FOR_CLUB (Person_ID, Category_ID, Champ_ID, Club_ID) VALUES
+(4, 14, 1, 6),
+(6, 16, 1, 6),
+(5, 6, 1, 6),
+(7, 2, 1, 6),
+(8, 15, 1, 6),
+(4, 14, 2, 6),
+(6, 16, 2, 6),
+(8, 14, 2, 6),
+(9, 14, 3, 7),
+(6, 16, 3, 6),
+(16, 14, 4, 4);
+
+--administrative change records
+
+INSERT INTO CHANGE_RECORD (Change_ID, Field_Name, Old_Value, New_Value, Reason, Requested_At, Decided_At, Status, Entry_Person_ID, Entry_Category_ID, Entry_Champ_ID, Requested_By, Approved_By) VALUES
+(1, 'Display_Name', 'Bryan Nelson', 'Bryan C. Nelson', 'Official middle initial correction for award certificates', '2017-08-15 14:00:00', '2017-08-16 10:00:00', 'Approved', 4, 14, 1, 4, 1),
+-- Demo record for pending status / approval / delete testing:
+(2, 'Beard_Length_cm', '28.00', '30.00', 'Measurement update requested by competitor before check-in', '2025-05-01 11:30:00', NULL, 'Pending', 16, 14, 4, 16, NULL);
