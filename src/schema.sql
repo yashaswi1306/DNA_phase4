@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS wbmc_db;
+
 CREATE DATABASE wbmc_db;
 
 USE wbmc_db;
