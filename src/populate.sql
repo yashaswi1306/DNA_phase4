@@ -187,3 +187,40 @@ INSERT INTO SUPPORTS (Champ_ID, Charity_ID) VALUES
 (2, 4),
 (3, 2),
 (4, 3);
+
+-- subclasses and appointmnts
+
+INSERT INTO COMPETITOR (Person_ID) VALUES
+(4), (5), (6), (7), (8), (9), (10), (11), (14), (15), (16);
+
+INSERT INTO WBMA_OFFICER (Person_ID) VALUES
+(1), (2), (3);
+
+INSERT INTO OFFICER_APPOINTMENT (Appointment_ID, Position, Term_Start_Year, Term_End_Year, Person_ID, Club_ID) VALUES
+(1, 'President', 2013, 2024, 1, NULL),
+(2, 'Vice_President', 2015, NULL, 3, NULL),
+(3, 'Host_Club_Vice_President', 2016, 2018, 2, 1);
+
+INSERT INTO ORGANIZES (Person_ID, Champ_ID, Role) VALUES
+(2, 1, 'Organizer'),
+(1, 1, 'Category_Check_Team'),
+(3, 2, 'Organizer'),
+(9, 3, 'Organizer'),
+(12, 4, 'Organizer'),
+(2, 4, 'Category_Check_Team');
+
+--host bidding
+
+INSERT INTO HOST_BID (Champ_ID, Bid_No, Proposed_City, Proposed_Region, Proposed_Country, Votes, `Rank`, Status, Eligibility, Club_ID) VALUES
+(1, 1, 'Austin', 'Texas', 'USA', 42, 1, 'Won', 'Eligible', 1),
+(2, 1, 'Antwerp', 'Antwerp', 'Belgium', 38, 1, 'Won', 'Eligible', 2),
+(3, 1, 'Burghausen', 'Bavaria', 'Germany', 35, 1, 'Won', 'Eligible', 3),
+(4, 1, 'Pittsburgh', 'Pennsylvania', 'USA', 45, 1, 'Won', 'Eligible', 4),
+(4, 2, 'Auckland', 'Auckland', 'New Zealand', 28, 2, 'Lost', 'Eligible', 6);
+
+INSERT INTO HOST_BID_REPRESENTATIVE (Champ_ID, Bid_No, Person_ID) VALUES
+(1, 1, 2),
+(2, 1, 3),
+(3, 1, 9),
+(4, 1, 12),
+(4, 2, 18);
