@@ -103,7 +103,8 @@ def get_categories(champ_id):
         SELECT Category_ID, Display_Name, Category_Group
         FROM OFFERS
         WHERE Champ_ID = %s
-        ORDER BY Category_Group, Display_Name
+        ORDER BY FIELD(Category_Group, 'Moustache', 'Partial Beard', 'Full Beard', 'Freestyle', 'Craft'),
+                 Display_Name
     """
     return fetch_all(sql, (champ_id,))
 
@@ -121,7 +122,8 @@ def get_results(champ_id, category_id=None):
         WHERE ci.Champ_ID = %s
           AND ci.Placement IS NOT NULL
           AND (%s IS NULL OR ci.Category_ID = %s)
-        ORDER BY o.Category_Group, o.Display_Name, ci.Placement
+        ORDER BY FIELD(o.Category_Group, 'Moustache', 'Partial Beard', 'Full Beard', 'Freestyle', 'Craft'),
+                 o.Display_Name, ci.Placement
     """
     return fetch_all(sql, (champ_id, category_id, category_id))
 
@@ -171,7 +173,6 @@ def get_competitor_awards(person_id):
         ORDER BY ch.Year DESC
     """
     return fetch_all(sql, (person_id,))
-
 
 
 # ---------- tickets and check-in ----------

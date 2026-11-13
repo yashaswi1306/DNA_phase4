@@ -48,26 +48,24 @@
 {% endif %}
 
 {% if results %}
-<table>
-    <tr>
-        <th>Group</th>
-        <th>Category</th>
-        <th>Place</th>
-        <th>Name</th>
-        <th>Hometown</th>
-        <th>Score</th>
-    </tr>
+    {% set last = namespace(group='', category='') %}
     {% for r in results %}
-    <tr>
-        <td>{{ r.Category_Group }}</td>
-        <td>{{ r.Category }}</td>
-        <td>{{ r.Placement }}</td>
-        <td><a href="/competitor/{{ r.Person_ID }}">{{ r.Display_Name }}</a></td>
-        <td>{{ r.Event_Hometown_City or '' }}{% if r.Event_Hometown_City and r.Event_Hometown_Country %}, {% endif %}{{ r.Event_Hometown_Country or '' }}</td>
-        <td>{{ r.Score if r.Score is not none else '' }}</td>
-    </tr>
+        {% if r.Category_Group != last.group %}
+        <h3 class="group">{{ r.Category_Group }} Categories</h3>
+        {% set last.group = r.Category_Group %}
+        {% endif %}
+
+        {% if r.Category != last.category %}
+        <h4>{{ r.Category }}</h4>
+        {% set last.category = r.Category %}
+        {% endif %}
+
+        <p class="placing">
+            {{ r.Placement }}.
+            <a href="/competitor/{{ r.Person_ID }}">{{ r.Display_Name }}</a>{% if r.Event_Hometown_City %}, {{ r.Event_Hometown_City }}{% endif %}{% if r.Event_Hometown_Country %}, {{ r.Event_Hometown_Country }}{% endif %}
+            {% if r.Score is not none %}({{ r.Score }}){% endif %}
+        </p>
     {% endfor %}
-</table>
 {% else %}
 <p>No results for this championship.</p>
 {% endif %}
