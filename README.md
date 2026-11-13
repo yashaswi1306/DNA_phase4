@@ -1,5 +1,9 @@
 # DNA Phase 4 — World Beard and Moustache Championships
 
+## Link for submission video 
+
+https://drive.google.com/file/d/1De25jY9NbK6kR_OKAxWKT7GxDFCikeJq/view?usp=sharing
+
 ## 1. Project Overview
 
 A relational database and web application for the
