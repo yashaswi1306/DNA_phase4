@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Competitors</h2>
+
+<form action="/search">
+    Name: <input type="text" name="q" value="{{ q }}">
+    <button type="submit">Search</button>
+</form>
+
+{% if q %}
+    {% if people %}
+    <ul>
+        {% for p in people %}
+        <li>
+            <a href="/competitor/{{ p.Person_ID }}">{{ p.Display_Name }}</a>
+            {% if p.Hometown_City %}({{ p.Hometown_City }}, {{ p.Hometown_Country }})
+            {% elif p.Hometown_Country %}({{ p.Hometown_Country }}){% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No competitors found for "{{ q }}".</p>
+    {% endif %}
+{% endif %}
+
+{% endblock %}

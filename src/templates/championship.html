@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>{{ champ.Year }} WBMC {{ champ.Host_City }}, {{ champ.Host_Country }}</h2>
+
+<p>
+    <b>Status:</b> {{ champ.Status }}<br>
+    <b>Host club:</b> {{ champ.Host_Club or 'unknown' }}<br>
+    <b>Venue:</b> {{ champ.Venue or 'unknown' }}{% if champ.Venue_Street %}, {{ champ.Venue_Street }}{% endif %}<br>
+    <b>Dates:</b> {{ champ.Event_Dates or 'not announced' }}<br>
+    {% if champ.Max_Categories_Per_Competitor %}
+    <b>Max categories per competitor:</b> {{ champ.Max_Categories_Per_Competitor }}<br>
+    {% endif %}
+    {% if champ.Replaces_Year %}
+    <b>Replaces:</b> the cancelled {{ champ.Replaces_Year }} championship<br>
+    {% endif %}
+</p>
+
+{% if best_in_show %}
+<p><b>Best in Show:</b>
+    {% for b in best_in_show %}
+    <a href="/competitor/{{ b.Person_ID }}">{{ b.Display_Name }}</a> ({{ b.Division }}){% if not loop.last %}, {% endif %}
+    {% endfor %}
+</p>
+{% endif %}
+
+{% if charities %}
+<p><b>Charities:</b>
+    {% for c in charities %}{{ c.Name }}{% if not loop.last %}, {% endif %}{% endfor %}
+</p>
+{% endif %}
+
+<h3>Results</h3>
+
+{% if categories %}
+<form action="/championship/{{ champ.Champ_ID }}">
+    Category:
+    <select name="category">
+        <option value="">All categories</option>
+        {% for c in categories %}
+        <option value="{{ c.Category_ID }}" {% if c.Category_ID == category_id %}selected{% endif %}>
+            {{ c.Category_Group }} - {{ c.Display_Name }}
+        </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Show</button>
+</form>
+{% endif %}
+
+{% if results %}
+<table>
+    <tr>
+        <th>Group</th>
+        <th>Category</th>
+        <th>Place</th>
+        <th>Name</th>
+        <th>Hometown</th>
+        <th>Score</th>
+    </tr>
+    {% for r in results %}
+    <tr>
+        <td>{{ r.Category_Group }}</td>
+        <td>{{ r.Category }}</td>
+        <td>{{ r.Placement }}</td>
+        <td><a href="/competitor/{{ r.Person_ID }}">{{ r.Display_Name }}</a></td>
+        <td>{{ r.Event_Hometown_City or '' }}{% if r.Event_Hometown_City and r.Event_Hometown_Country %}, {% endif %}{{ r.Event_Hometown_Country or '' }}</td>
+        <td>{{ r.Score if r.Score is not none else '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No results for this championship.</p>
+{% endif %}
+
+<p><a href="/">Back to all championships</a></p>
+
+{% endblock %}

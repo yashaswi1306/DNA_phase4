@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>{{ person.Display_Name }}</h2>
+
+<p>
+    {% if person.Nickname and person.Nickname != person.Display_Name %}
+    <b>Nickname:</b> {{ person.Nickname }}<br>
+    {% endif %}
+    <b>Hometown:</b>
+    {{ person.Hometown_City or '' }}{% if person.Hometown_City %}, {% endif %}{{ person.Hometown_Region or '' }}{% if person.Hometown_Region %}, {% endif %}{{ person.Hometown_Country or 'unknown' }}<br>
+    <b>Clubs:</b>
+    {% for c in clubs %}{{ c.Name }}{% if not loop.last %}, {% endif %}{% else %}none{% endfor %}
+</p>
+
+{% if awards %}
+<p><b>Best in Show:</b>
+    {% for a in awards %}
+    <a href="/championship/{{ a.Champ_ID }}">{{ a.Year }} {{ a.Host_City }}</a> ({{ a.Division }}){% if not loop.last %}, {% endif %}
+    {% endfor %}
+</p>
+{% endif %}
+
+<h3>Championships</h3>
+<table>
+    <tr>
+        <th>Year</th>
+        <th>Championship</th>
+        <th>Category</th>
+        <th>Represented</th>
+        <th>Place</th>
+        <th>Score</th>
+        <th>Status</th>
+    </tr>
+    {% for h in history %}
+    <tr>
+        <td>{{ h.Year }}</td>
+        <td><a href="/championship/{{ h.Champ_ID }}">{{ h.Host_City }}</a></td>
+        <td>{{ h.Category }}</td>
+        <td>{{ h.Represented_Country or '' }}</td>
+        <td>{{ h.Placement or '' }}</td>
+        <td>{{ h.Score if h.Score is not none else '' }}</td>
+        <td>{{ h.Entry_Status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p><a href="/search">Back to search</a></p>
+
+{% endblock %}
