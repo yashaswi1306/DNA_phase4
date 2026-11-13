@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Competitor check-in</h2>
+
+<form action="/checkin">
+    Championship:
+    <select name="champ_id">
+        {% for c in championships %}
+        <option value="{{ c.Champ_ID }}" {% if c.Champ_ID == champ.Champ_ID %}selected{% endif %}>
+            {{ c.Year }} {{ c.Host_City }} ({{ c.Status }})
+        </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Show</button>
+</form>
+
+{% if entries %}
+<table>
+    <tr>
+        <th>No.</th>
+        <th>Competitor</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Checked in at</th>
+        <th></th>
+    </tr>
+    {% for e in entries %}
+    <tr>
+        <td>{{ e.Competitor_No or '' }}</td>
+        <td><a href="/competitor/{{ e.Person_ID }}">{{ e.Display_Name }}</a></td>
+        <td>{{ e.Category }}</td>
+        <td>{{ e.Entry_Status }}</td>
+        <td>{{ e.Check_In_At or '' }}</td>
+        <td>
+            {% if e.Entry_Status == 'Registered' %}
+            <form action="/checkin" method="post">
+                <input type="hidden" name="person_id" value="{{ e.Person_ID }}">
+                <input type="hidden" name="category_id" value="{{ e.Category_ID }}">
+                <input type="hidden" name="champ_id" value="{{ e.Champ_ID }}">
+                <button type="submit">Check in</button>
+            </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No registered competitors for this championship.</p>
+{% endif %}
+
+{% endblock %}

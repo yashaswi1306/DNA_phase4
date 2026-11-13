@@ -171,3 +171,104 @@ def get_competitor_awards(person_id):
         ORDER BY ch.Year DESC
     """
     return fetch_all(sql, (person_id,))
+
+
+
+# ---------- tickets and check-in ----------
+
+def get_people():
+    return fetch_all("SELECT Person_ID, Display_Name FROM PERSON ORDER BY Display_Name")
+
+
+def get_event_dates(champ_id):
+    sql = "SELECT Event_Date FROM CHAMP_EVENT_DATE WHERE Champ_ID = %s ORDER BY Event_Date"
+    return fetch_all(sql, (champ_id,))
+
+
+def get_tickets(champ_id):
+    sql = """
+        SELECT t.Champ_ID, t.Ticket_No, t.Type, t.Access, t.Price, t.Currency, t.Status,
+               t.Valid_On, p.Display_Name AS Holder
+        FROM TICKET t
+        JOIN PERSON p ON p.Person_ID = t.Holder_ID
+        WHERE t.Champ_ID = %s
+        ORDER BY t.Ticket_No
+    """
+    return fetch_all(sql, (champ_id,))
+
+
+def get_registered_entries(champ_id):
+    sql = """
+        SELECT ci.Person_ID, ci.Category_ID, ci.Champ_ID, ci.Competitor_No,
+               ci.Entry_Status, ci.Check_In_At,
+               p.Display_Name, o.Display_Name AS Category
+        FROM COMPETES_IN ci
+        JOIN PERSON p ON p.Person_ID = ci.Person_ID
+        JOIN OFFERS o ON o.Champ_ID = ci.Champ_ID AND o.Category_ID = ci.Category_ID
+        WHERE ci.Champ_ID = %s
+          AND ci.Entry_Status IN ('Registered', 'Checked_in')
+        ORDER BY ci.Competitor_No
+    """
+    return fetch_all(sql, (champ_id,))
+
+
+# Update 1 (INSERT): create a ticket, the ticket number is the next free number
+def create_ticket(champ_id, holder_id, ticket_type, access, price, currency, valid_on):
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT Status FROM CHAMPIONSHIP WHERE Champ_ID = %s FOR UPDATE", (champ_id,))
+            champ = cur.fetchone()
+            if champ is None:
+                raise ValueError("Championship not found.")
+            if champ["Status"] not in ("Upcoming", "In_progress"):
+                raise ValueError("Tickets can only be created for upcoming championships.")
+
+            cur.execute("SELECT COALESCE(MAX(Ticket_No), 0) + 1 AS Next_No FROM TICKET WHERE Champ_ID = %s",
+                        (champ_id,))
+            ticket_no = cur.fetchone()["Next_No"]
+
+            sql = """
+                INSERT INTO TICKET (Champ_ID, Ticket_No, Type, Access, Price, Currency, Status, Valid_On, Holder_ID)
+                VALUES (%s, %s, %s, %s, %s, %s, 'Valid', %s, %s)
+            """
+            cur.execute(sql, (champ_id, ticket_no, ticket_type, access, price, currency, valid_on, holder_id))
+        conn.commit()
+        return ticket_no
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+def run_update(sql, params):
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql, params)
+            count = cur.rowcount
+        conn.commit()
+        return count
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+# Update 2 (UPDATE): check in a registered competitor, returns how many rows changed
+def check_in(person_id, category_id, champ_id):
+    sql = """
+        UPDATE COMPETES_IN
+        SET Checked_In = TRUE, Check_In_At = CURRENT_TIMESTAMP, Entry_Status = 'Checked_in'
+        WHERE Person_ID = %s AND Category_ID = %s AND Champ_ID = %s
+          AND Entry_Status = 'Registered'
+    """
+    return run_update(sql, (person_id, category_id, champ_id))
+
+
+# Update 3 (DELETE): delete a ticket, returns how many rows were deleted
+def delete_ticket(champ_id, ticket_no):
+    sql = "DELETE FROM TICKET WHERE Champ_ID = %s AND Ticket_No = %s"
+    return run_update(sql, (champ_id, ticket_no))

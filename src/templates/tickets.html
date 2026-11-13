@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Tickets</h2>
+
+<form action="/tickets">
+    Championship:
+    <select name="champ_id">
+        {% for c in championships %}
+        <option value="{{ c.Champ_ID }}" {% if c.Champ_ID == champ.Champ_ID %}selected{% endif %}>
+            {{ c.Year }} {{ c.Host_City }} ({{ c.Status }})
+        </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Show</button>
+</form>
+
+<h3>Buy a ticket for {{ champ.Year }} {{ champ.Host_City }}</h3>
+
+<form action="/tickets/new" method="post">
+    <input type="hidden" name="champ_id" value="{{ champ.Champ_ID }}">
+
+    Holder:
+    <select name="holder_id">
+        <option value="">-- choose --</option>
+        {% for p in people %}
+        <option value="{{ p.Person_ID }}">{{ p.Display_Name }}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    Type:
+    <select name="type">
+        {% for t in ticket_types %}
+        <option value="{{ t }}">{{ t }}</option>
+        {% endfor %}
+    </select>
+
+    Access:
+    <select name="access">
+        <option value="Weekend">Weekend</option>
+        <option value="Day">Day</option>
+    </select>
+
+    Day (only for Day tickets):
+    <select name="valid_on">
+        <option value="">--</option>
+        {% for d in dates %}
+        <option value="{{ d.Event_Date }}">{{ d.Event_Date }}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    Price: <input type="text" name="price" size="6">
+    Currency: <input type="text" name="currency" size="4" value="GBP">
+
+    <button type="submit">Create ticket</button>
+</form>
+
+<h3>Tickets sold</h3>
+
+{% if tickets %}
+<table>
+    <tr>
+        <th>No.</th>
+        <th>Holder</th>
+        <th>Type</th>
+        <th>Access</th>
+        <th>Day</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th></th>
+    </tr>
+    {% for t in tickets %}
+    <tr>
+        <td>{{ t.Ticket_No }}</td>
+        <td>{{ t.Holder }}</td>
+        <td>{{ t.Type }}</td>
+        <td>{{ t.Access }}</td>
+        <td>{{ t.Valid_On or '' }}</td>
+        <td>{{ t.Price }} {{ t.Currency }}</td>
+        <td>{{ t.Status }}</td>
+        <td>
+            <form action="/tickets/delete" method="post">
+                <input type="hidden" name="champ_id" value="{{ t.Champ_ID }}">
+                <input type="hidden" name="ticket_no" value="{{ t.Ticket_No }}">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No tickets for this championship.</p>
+{% endif %}
+
+{% endblock %}

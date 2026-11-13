@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request
+import pymysql
+from flask import Flask, flash, redirect, render_template, request
 
 import db
 from config import SECRET_KEY
@@ -8,6 +9,7 @@ app.secret_key = SECRET_KEY
 
 STATUSES = ["Upcoming", "In_progress", "Completed", "Cancelled"]
 STYLING_AIDS = ["None", "Moustache_only", "Allowed"]
+TICKET_TYPES = ["Spectator", "Competitor", "Kids_spectator", "Kids_competitor"]
 
 
 @app.route("/")
@@ -63,6 +65,108 @@ def competitor(person_id):
                            history=db.get_competitor_history(person_id),
                            clubs=db.get_competitor_clubs(person_id),
                            awards=db.get_competitor_awards(person_id))
+
+
+# picks the championship from ?champ_id=, otherwise the first upcoming one
+def selected_championship(championships):
+    champ_id = request.args.get("champ_id", type=int)
+    for c in championships:
+        if c["Champ_ID"] == champ_id:
+            return c
+    for c in championships:
+        if c["Status"] == "Upcoming":
+            return c
+    return championships[0]
+
+
+@app.route("/tickets")
+def tickets():
+    championships = db.get_championships()
+    champ = selected_championship(championships)
+    return render_template("tickets.html", championships=championships, champ=champ,
+                           tickets=db.get_tickets(champ["Champ_ID"]),
+                           people=db.get_people(),
+                           dates=db.get_event_dates(champ["Champ_ID"]),
+                           ticket_types=TICKET_TYPES)
+
+
+@app.route("/tickets/new", methods=["POST"])
+def new_ticket():
+    champ_id = request.form.get("champ_id", type=int)
+    holder_id = request.form.get("holder_id", type=int)
+    ticket_type = request.form.get("type")
+    access = request.form.get("access")
+    valid_on = request.form.get("valid_on") or None
+    currency = request.form.get("currency", "").strip().upper()
+
+    try:
+        price = float(request.form.get("price", ""))
+    except ValueError:
+        price = None
+
+    if holder_id is None:
+        flash("Choose a ticket holder.", "error")
+    elif ticket_type not in TICKET_TYPES or access not in ("Day", "Weekend"):
+        flash("Invalid ticket type or access.", "error")
+    elif price is None or price < 0:
+        flash("Price must be a number that is 0 or more.", "error")
+    elif len(currency) != 3:
+        flash("Currency must be a 3 letter code like GBP.", "error")
+    elif access == "Day" and valid_on is None:
+        flash("A Day ticket needs a date.", "error")
+    else:
+        if access == "Weekend":
+            valid_on = None
+        try:
+            ticket_no = db.create_ticket(champ_id, holder_id, ticket_type, access, price, currency, valid_on)
+            flash("Ticket " + str(ticket_no) + " created.", "success")
+        except ValueError as e:
+            flash(str(e), "error")
+        except pymysql.MySQLError as e:
+            flash("Database error: " + str(e.args[-1]), "error")
+
+    return redirect("/tickets?champ_id=" + str(champ_id))
+
+
+@app.route("/tickets/delete", methods=["POST"])
+def delete_ticket():
+    champ_id = request.form.get("champ_id", type=int)
+    ticket_no = request.form.get("ticket_no", type=int)
+
+    try:
+        if db.delete_ticket(champ_id, ticket_no) == 0:
+            flash("Ticket not found.", "error")
+        else:
+            flash("Ticket " + str(ticket_no) + " deleted.", "success")
+    except pymysql.MySQLError as e:
+        flash("Database error: " + str(e.args[-1]), "error")
+
+    return redirect("/tickets?champ_id=" + str(champ_id))
+
+
+@app.route("/checkin")
+def checkin():
+    championships = db.get_championships()
+    champ = selected_championship(championships)
+    return render_template("checkin.html", championships=championships, champ=champ,
+                           entries=db.get_registered_entries(champ["Champ_ID"]))
+
+
+@app.route("/checkin", methods=["POST"])
+def do_checkin():
+    person_id = request.form.get("person_id", type=int)
+    category_id = request.form.get("category_id", type=int)
+    champ_id = request.form.get("champ_id", type=int)
+
+    try:
+        if db.check_in(person_id, category_id, champ_id) == 0:
+            flash("This competitor is not registered or is already checked in.", "error")
+        else:
+            flash("Competitor checked in.", "success")
+    except pymysql.MySQLError as e:
+        flash("Database error: " + str(e.args[-1]), "error")
+
+    return redirect("/checkin?champ_id=" + str(champ_id))
 
 
 @app.errorhandler(404)
