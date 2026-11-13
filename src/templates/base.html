@@ -7,17 +7,23 @@
 </head>
 <body>
     <div class="header">
-        <h1>World Beard and Moustache Championships</h1>
-        <a href="/">Results</a> |
-        <a href="/search">Competitors</a> |
-        <a href="/tickets">Tickets</a> |
-        <a href="/checkin">Check-in</a>
+        <div class="container">
+            <a class="title" href="/">World Beard and Moustache Championships</a>
+            <div class="nav">
+                <a href="/">Results</a>
+                <a href="/search">Competitors</a>
+                <a href="/tickets">Tickets</a>
+                <a href="/checkin">Check-in</a>
+            </div>
+        </div>
     </div>
 
-    {% for category, message in get_flashed_messages(with_categories=true) %}
-    <p class="{{ category }}">{{ message }}</p>
-    {% endfor %}
+    <div class="container">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+        <p class="{{ category }}">{{ message }}</p>
+        {% endfor %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>

@@ -17,7 +17,7 @@
 
 <h3>Buy a ticket for {{ champ.Year }} {{ champ.Host_City }}</h3>
 
-<form action="/tickets/new" method="post">
+<form action="/tickets/new" method="post" class="box">
     <input type="hidden" name="champ_id" value="{{ champ.Champ_ID }}">
 
     Holder:
@@ -84,7 +84,7 @@
             <form action="/tickets/delete" method="post">
                 <input type="hidden" name="champ_id" value="{{ t.Champ_ID }}">
                 <input type="hidden" name="ticket_no" value="{{ t.Ticket_No }}">
-                <button type="submit">Delete</button>
+                <button type="submit" class="delete">Delete</button>
             </form>
         </td>
     </tr>

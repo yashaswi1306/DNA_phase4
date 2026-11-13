@@ -1,37 +1,146 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px 40px;
+    font-family: Georgia, "Times New Roman", serif;
+    margin: 0;
+    background-color: #f5f2ec;
+    color: #222;
 }
 
-.header {
-    border-bottom: 1px solid #999;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+a {
+    color: #7a4b16;
 }
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* header */
+
+.header {
+    background-color: #1f1f1f;
+    padding: 14px 0;
+    margin-bottom: 25px;
+    border-bottom: 3px solid #b8862b;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header .title {
+    color: #f5f2ec;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav a {
+    color: #ddd;
+    text-decoration: none;
+    margin-left: 18px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.nav a:hover {
+    color: #b8862b;
+}
+
+h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 6px;
+}
+
+h3 {
+    margin-top: 30px;
+}
+
+/* tables */
 
 table {
     border-collapse: collapse;
+    width: 100%;
     margin-top: 10px;
+    margin-bottom: 20px;
+    background-color: white;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
 }
 
 th, td {
-    border: 1px solid #aaa;
-    padding: 4px 8px;
+    border: 1px solid #ddd;
+    padding: 7px 10px;
     text-align: left;
 }
 
 th {
-    background-color: #eee;
+    background-color: #e9e3d8;
 }
+
+tr:nth-child(even) td {
+    background-color: #faf8f4;
+}
+
+/* forms */
 
 form {
-    margin: 10px 0;
+    margin: 12px 0;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
 }
 
+td form {
+    margin: 0;
+}
+
+input, select {
+    padding: 5px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+button {
+    padding: 5px 12px;
+    border: 1px solid #1f1f1f;
+    border-radius: 3px;
+    background-color: #1f1f1f;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #444;
+}
+
+button.delete {
+    background-color: #a33;
+    border-color: #a33;
+}
+
+.box {
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+}
+
+/* messages */
+
 .error {
-    color: red;
+    color: #a33;
+    background-color: #fbeaea;
+    border: 1px solid #e5b5b5;
+    padding: 8px 12px;
 }
 
 .success {
-    color: green;
+    color: #2d6a2d;
+    background-color: #e9f5e9;
+    border: 1px solid #b5d8b5;
+    padding: 8px 12px;
 }
