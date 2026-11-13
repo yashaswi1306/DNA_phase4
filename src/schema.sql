@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS wbmc_db;
 
-CREATE DATABASE wbmc_db;
+CREATE DATABASE wbmc_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE wbmc_db;
 
@@ -732,9 +732,6 @@ CREATE TABLE CHANGE_RECORD (
 
 CREATE INDEX idx_championship_status
 ON CHAMPIONSHIP(Status);
-
-CREATE INDEX idx_championship_year
-ON CHAMPIONSHIP(Year);
 
 CREATE INDEX idx_person_display_name
 ON PERSON(Display_Name);
